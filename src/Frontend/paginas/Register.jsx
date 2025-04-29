@@ -1,11 +1,21 @@
-import "../estilos/Login.css";
+import logo from "../imagenes/logo.png";
+import "../estilos/Register.css";
 
-const Login = () => {
+const Register = () => {
   return (
-    <>
+    <div>
+      <img src={logo} alt="logo" className="imgLogo " />
+      <div>
+        <h3 className="mt-3">
+          {" "}
+          <strong>
+            "Porque un día bien organizado, es un día productivo."
+          </strong>{" "}
+        </h3>
+      </div>
       <div className="d-flex justify-content-center align-items-center mt-5">
         <div className="formulario-container ">
-          <p className="titulo">Bienvenido</p>
+          <p className="titulo">Formulario de registro</p>
           <form className="formulario">
             <div className="inputs-formulario">
               <label htmlFor="correo">Correo</label>
@@ -19,23 +29,20 @@ const Login = () => {
                 id="contraseña"
                 placeholder=""
               />
-              <div className="olvidasteContraseña">
-                <a href="#">Olvidaste tu contraseña ?</a>
-              </div>
             </div>
-            <button className="iniciarSesion">Iniciar sesion</button>
+            <button className="iniciarSesion">Registrarse</button>
           </form>
 
           <p className="registrarse">
-            No tienes una cuenta?
+            ya tienes una cuenta?
             <a rel="noopener noreferrer" href="#" className="">
-              Crear cuenta
+              iniciar sesion
             </a>
           </p>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Login;
+export default Register;
