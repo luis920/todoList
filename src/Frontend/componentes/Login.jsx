@@ -1,4 +1,5 @@
 import "../estilos/Login.css";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
@@ -19,18 +20,17 @@ const Login = () => {
                 id="contraseña"
                 placeholder=""
               />
-              <div className="olvidasteContraseña">
+              {/* <div className="olvidasteContraseña text-center">
                 <a href="#">Olvidaste tu contraseña ?</a>
-              </div>
+              </div> */}
             </div>
-            <button className="iniciarSesion">Iniciar sesion</button>
+
+            <button className="iniciarSesion mt-3">Iniciar sesion</button>
           </form>
 
-          <p className="registrarse">
+          <p className="registrarse mt-2">
             No tienes una cuenta?
-            <a rel="noopener noreferrer" href="#" className="">
-              Crear cuenta
-            </a>
+            <Link to={"/registro"}>Crear cuenta</Link>
           </p>
         </div>
       </div>

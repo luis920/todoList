@@ -1,0 +1,12 @@
+.icon-actions-pen:hover {
+  color: rgb(34, 128, 195);
+  font-size: 20px;
+  transform: translateY(-5px);
+  transition: transform 1s ease-in-out;
+}
+.icon-actions-trash:hover {
+  color: rgb(255, 0, 0);
+  font-size: 20px;
+  transform: translateY(-5px);
+  transition: transform 1s ease-in-out;
+}
