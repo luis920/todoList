@@ -2,13 +2,18 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token,get_jwt_identity,jwt_required,JWTManager
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 CORS(app)
+jwt = JWTManager(app)
 
-# Configuración de la base de datos
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/TareasDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["JWT_SECRET_KEY"] = "todoList$23ñ12$.SeE"  
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -58,11 +63,13 @@ def nuevo_usuario():
 
     if Usuarios.query.filter_by(correo=data['correo']).first():
         return jsonify({'message': 'El correo electrónico ya está registrado.'}), 400
+    
+    hashed_password = bcrypt.generate_password_hash(data['contraseña']).decode('utf-8')
 
     usuario = Usuarios(
         nombre=data['nombre'],
         correo=data['correo'],
-        contraseña=data['contraseña']
+        contraseña=hashed_password
     )
 
     db.session.add(usuario)
@@ -76,6 +83,27 @@ def nuevo_usuario():
             'correo': usuario.correo
         }
     }), 201
+
+##RUTA PARA INICIAR SESION
+
+@app.route('/iniciarsesion', methods=['POST'])
+def login():
+    data = request.json
+    usuario = Usuarios.query.filter_by(correo=data['correo']).first()
+
+    if usuario and bcrypt.check_password_hash(usuario.contraseña, data['contraseña']):
+       
+        access_token = create_access_token(identity=usuario.id)
+        return jsonify({
+    "access_token": access_token,
+    "usuario": {
+        "id": usuario.id,
+        "correo": usuario.correo,
+       
+    }
+}), 200
+    else:
+        return jsonify({"msg": "Correo o contraseña incorrectos"}), 401
 
 # Ruta para agregar una tarea a un usuario
 @app.route('/tarea', methods=['POST'])
