@@ -3,6 +3,7 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       tareas: [],
       usuario: [],
+      token: localStorage.getItem("token") || null,
     },
     actions: {
       obtenerTareas: async () => {
@@ -70,6 +71,39 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.error("Error al registrarse:", error);
         }
+      },
+      login: async (correo, contraseña) => {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/iniciarsesion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ correo, contraseña }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            localStorage.setItem("token", data.access_token);
+            // localStorage.setItem("usuario", data.usuario);
+
+            setStore({ usuario: data.usuario, token: data.access_token });
+
+            return data;
+          } else {
+            console.log(
+              "Error al iniciar sesion:",
+              response.status,
+              response.statusText
+            );
+          }
+        } catch (error) {
+          console.error("Error al iniciar sesion:", error);
+        }
+      },
+      cerrarSesion: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("rol");
+        setStore({ usuario: null, token: null });
       },
     },
   };
