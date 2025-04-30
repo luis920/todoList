@@ -103,6 +103,60 @@ const getState = ({ getStore, getActions, setStore }) => {
       cerrarSesion: () => {
         localStorage.removeItem("token");
       },
+      actualizarTarea: async (id, tareaActualizada) => {
+        try {
+          const response = await fetch(`http://127.0.0.1:5000/tarea/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(tareaActualizada),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error al actualizar:", errorData);
+            return {
+              error: errorData.message || "Error al actualizar la tarea",
+            };
+          }
+
+          const actualizarTarea = await response.json();
+          const store = getStore();
+          const actualizarTareas = store.tareas.map((tarea) =>
+            tarea.id === id ? actualizarTarea : tarea
+          );
+          setStore({ tareas: actualizarTareas });
+          return actualizarTarea;
+        } catch (error) {
+          console.error("Error actualizando tarea:", error);
+          return { error: "Error de conexión con el servidor" };
+        }
+      },
+      agregarTarea: async (nuevaTarea) => {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/tarea", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(nuevaTarea),
+          });
+
+          if (response.ok) {
+            const nuevaTarea = await response.json();
+            const store = getStore();
+            setStore({
+              tareas: [...store.tareas, nuevaTarea],
+            });
+            return nuevaTarea;
+          } else {
+            console.error("Error al agregar tarea:", response.status);
+          }
+        } catch (error) {
+          console.error("Error al agregar tarea:", error);
+        }
+      },
     },
   };
 };
