@@ -2,6 +2,7 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       tareas: [],
+      usuario: [],
     },
     actions: {
       obtenerTareas: async () => {
@@ -19,28 +20,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           return null;
         }
       },
-      agregarCliente: async (nuevoCliente) => {
-        try {
-          const response = await fetch("http://127.0.0.1:5000/cliente", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(nuevoCliente),
-          });
 
-          if (response.ok) {
-            const nuevoCliente = await response.json();
-            const store = getStore();
-            setStore({ clientes: [...store.clientes, nuevoCliente] });
-            return nuevoCliente;
-          } else {
-            console.error("Error al agregar cliente:", response.status);
-          }
-        } catch (error) {
-          console.error("Error al agregar cliente:", error);
-        }
-      },
       eliminarTarea: async (id) => {
         try {
           const response = await fetch(`http://127.0.0.1:5000/tarea/${id}`, {
@@ -65,6 +45,30 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.error("Error al eliminar tarea:", error);
           return false;
+        }
+      },
+      agregarUsuario: async (nuevoUsuario) => {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/registro", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(nuevoUsuario),
+          });
+
+          if (response.ok) {
+            const usuarioRegistrado = await response.json();
+            const store = getStore();
+            setStore({
+              usuario: [...store.usuario, usuarioRegistrado],
+            });
+            return usuarioRegistrado;
+          } else {
+            console.error("Error al registrarse:", response.status);
+          }
+        } catch (error) {
+          console.error("Error al registrarse:", error);
         }
       },
     },
