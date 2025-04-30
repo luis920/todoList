@@ -145,6 +145,12 @@ const Task = () => {
     navigate("/");
   };
 
+  const manejadorEditarTarea = (tarea) => {
+    setEditarTarea(tarea);
+    setNuevaTarea(tarea);
+    setMostrarModal(true);
+  };
+
   const manejadorAbrirModal = () => {
     setEditarTarea(null);
     setNuevaTarea({
@@ -212,7 +218,7 @@ const Task = () => {
                       <td>{tarea.estado}</td>
                       <td>{tarea.usuario_id}</td>
                       <td>
-                        <button>
+                        <button onClick={() => manejadorEditarTarea(tarea)}>
                           <FontAwesomeIcon
                             className="icon-actions-pen"
                             icon={faPencil}
@@ -283,7 +289,7 @@ const Task = () => {
                         <option value="Selecciona una opcion">
                           Selecciona una opcion
                         </option>
-                        <option value="entregado">terminado</option>
+                        <option value="terminado">terminado</option>
                         <option value="en proceso">en proceso</option>
                       </select>
                     </div>
