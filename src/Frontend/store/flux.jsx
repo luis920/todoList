@@ -2,7 +2,7 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       tareas: [],
-      usuario: [],
+      usuario: JSON.parse(localStorage.getItem("usuario")) || null,
       token: localStorage.getItem("token") || null,
     },
     actions: {
@@ -84,24 +84,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           if (response.ok) {
             localStorage.setItem("token", data.access_token);
-            // localStorage.setItem("usuario", data.usuario);
+            localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
             setStore({ usuario: data.usuario, token: data.access_token });
 
             return data;
           } else {
             console.log(
-              "Error al iniciar sesion:",
+              "Error al iniciar sesión:",
               response.status,
               response.statusText
             );
           }
         } catch (error) {
-          console.error("Error al iniciar sesion:", error);
+          console.error("Error al iniciar sesión:", error);
         }
       },
       cerrarSesion: () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        setStore({ usuario: null, token: null });
       },
       actualizarTarea: async (id, tareaActualizada) => {
         try {
