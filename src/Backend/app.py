@@ -1,177 +1,126 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_migrate import Migrate
 
-
-# Inicialización de la aplicación Flask
 app = Flask(__name__)
 CORS(app)
 
 # Configuración de la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/TareasDB'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Desactivar modificaciones de seguimiento
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicialización de SQLAlchemy
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-# Definición del modelo de la base de datos
+# Modelo de Usuarios
 class Usuarios(db.Model):  
+    __tablename__ = 'usuarios'
+
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     correo = db.Column(db.String(100), nullable=False, unique=True)
     contraseña = db.Column(db.String(200), nullable=False)
 
-    def __init__(self, nombre,correo , contraseña):
+    def __init__(self, nombre, correo, contraseña):
         self.nombre = nombre
         self.correo = correo
         self.contraseña = contraseña
-        
 
+# Modelo de Tareas con relación a Usuarios
+class Tareas(db.Model):  
+    __tablename__ = 'tareas'
 
-# Crear las tablas de la base de datos (mejor hacerlo solo una vez)
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    descripcion = db.Column(db.String(100), nullable=False, unique=True)
+    estado = db.Column(db.String(200), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+
+    def __init__(self, titulo, descripcion, estado, usuario_id):
+        self.titulo = titulo
+        self.descripcion = descripcion
+        self.estado = estado
+        self.usuario_id = usuario_id
+
+# Resetear base de datos (drop y create)
 with app.app_context():
+    db.drop_all()
     db.create_all()
 
-# # Endpoint para crear una nueva playera
-# @app.route('/playera', methods=['POST'])
-# def crear_playera():
-#     # Obtener los datos del JSON
-#     titulo = request.json['titulo']
-#     descripcion = request.json['descripcion']
-#     precio = request.json['precio']
-#     imagen = request.json['imagen']
-
-#     # Crear una nueva instancia de Playera
-#     nueva_playera = Playera(titulo, descripcion, precio, imagen)
-
-#     # Agregar la nueva playera a la base de datos
-#     db.session.add(nueva_playera)
-#     db.session.commit()
-
-#     # Convertir el objeto Playera a un diccionario y devolverlo
-#     return jsonify({
-#         'id': nueva_playera.id,
-#         'titulo': nueva_playera.titulo,
-#         'descripcion': nueva_playera.descripcion,
-#         'precio': nueva_playera.precio,
-#         'imagen': nueva_playera.imagen
-#     }), 201
-
-# # Endpoint para crear un nuevo pedido
-# @app.route('/pedido', methods=['POST'])
-# def crear_pedido():
-#     cliente = request.json['cliente']
-#     tipo_prenda = request.json['tipo_prenda']
-#     cantidad = request.json['cantidad']
-#     fecha_entrega = request.json['fecha_entrega']
-#     precio = request.json['precio']
-#     estado_pedido = request.json['estado_pedido']
-
-#     nuevo_pedido = Pedidos(cliente, tipo_prenda, cantidad, fecha_entrega, precio, estado_pedido)
-
-#     db.session.add(nuevo_pedido)
-#     db.session.commit()
-
-#     return jsonify({
-#         'id': nuevo_pedido.id,
-#         'cliente': nuevo_pedido.cliente,
-#         'tipo_prenda': nuevo_pedido.tipo_prenda,
-#         'cantidad': nuevo_pedido.cantidad,
-#         'fecha_entrega': nuevo_pedido.fecha_entrega,
-#         'precio': nuevo_pedido.precio,
-#         'total': nuevo_pedido.total,
-#         'estado_pedido': nuevo_pedido.estado_pedido
-#     }), 201
-
-# # Endpoint para obtener todos los pedidos
-# @app.route('/pedidos', methods=['GET'])
-# def obtener_pedidos():
-#     pedidos = Pedidos.query.all()
-
-#     # Convertir cada pedido a un diccionario
-#     return jsonify([{
-#         'id': pedido.id,
-#         'cliente': pedido.cliente,
-#         'tipo_prenda': pedido.tipo_prenda,
-#         'cantidad': pedido.cantidad,
-#         'fecha_entrega': pedido.fecha_entrega,
-#         'precio': pedido.precio,
-#         'total': pedido.total,
-#         'estado_pedido': pedido.estado_pedido
-#     } for pedido in pedidos]), 200
-
-# # Endpoint para crear un nuevo cliente
-# @app.route('/cliente', methods=['POST'])
-# def crear_cliente():
-#     # Obtener los datos del JSON
-#     nombre = request.json['nombre']
-#     direccion = request.json['direccion']
-#     telefono = request.json['telefono']
-    
-#     nuevo_cliente = Clientes(nombre, direccion, telefono)
-
-#     db.session.add(nuevo_cliente)
-#     db.session.commit()
-
-#     return jsonify({
-#         'id': nuevo_cliente.id,
-#         'nombre': nuevo_cliente.nombre,
-#         'direccion': nuevo_cliente.direccion,
-#         'telefono': nuevo_cliente.telefono
-#     }), 201
-
-# # Endpoint para obtener todos los clientes
-# @app.route('/clientes', methods=['GET'])
-# def obtener_clientes():
-#     clientes = Clientes.query.all()
-
-#     # Convertir cada cliente a un diccionario
-#     return jsonify([{
-#         'id': cliente.id,
-#         'nombre': cliente.nombre,
-#         'direccion': cliente.direccion,
-#         'telefono': cliente.telefono
-#     } for cliente in clientes]), 200
-
-# Ejecutar la aplicación
-
+# Ruta para registrar un nuevo usuario
 @app.route('/registro', methods=['POST'])
 def nuevo_usuario():
     data = request.json
 
-    # Validar que los campos necesarios estén presentes
-    if not data.get('nombre')  or not data.get('correo') or not data.get('contraseña'):
+    if not data.get('nombre') or not data.get('correo') or not data.get('contraseña'):
         return jsonify({'message': 'Faltan datos necesarios.'}), 400
 
-    # Verificar si el correo ya está registrado
     if Usuarios.query.filter_by(correo=data['correo']).first():
         return jsonify({'message': 'El correo electrónico ya está registrado.'}), 400
 
-    # # Hashear la contraseña
-    # hashed_password = generate_password_hash(data['password'])
-
-    # Crear el nuevo usuario
     usuario = Usuarios(
         nombre=data['nombre'],
         correo=data['correo'],
-        contraseña=data['contraseña'],
-        
+        contraseña=data['contraseña']
     )
 
-    # Agregar el nuevo usuario a la base de datos
     db.session.add(usuario)
     db.session.commit()
 
-    # Responder con los datos del usuario creado
     return jsonify({
         'message': 'Usuario registrado con éxito',
         'usuario': {
             'id': usuario.id,
             'nombre': usuario.nombre,
-            'correo': usuario.correo,
-           
+            'correo': usuario.correo
         }
     }), 201
+
+# Ruta para agregar una tarea a un usuario
+@app.route('/tarea', methods=['POST'])
+def nueva_tarea():
+    data = request.json
+
+    if not data.get('titulo') or not data.get('descripcion') or not data.get('estado') or not data.get('usuario_id'):
+        return jsonify({'message': 'Faltan datos para crear la tarea.'}), 400
+
+    tarea = Tareas(
+        titulo=data['titulo'],
+        descripcion=data['descripcion'],
+        estado=data['estado'],
+        usuario_id=data['usuario_id']
+    )
+
+    db.session.add(tarea)
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Tarea creada con éxito',
+        'tarea': {
+            'id': tarea.id,
+            'titulo': tarea.titulo,
+            'descripcion': tarea.descripcion,
+            'estado': tarea.estado,
+            'usuario_id': tarea.usuario_id
+        }
+    }), 201
+
+@app.route('/tareas', methods=['GET'])
+def obtener_tareas():
+    tareas = Tareas.query.all()
+    lista_tareas = []
+
+    for tarea in tareas:
+        lista_tareas.append({
+            'id': tarea.id,
+            'titulo': tarea.titulo,
+            'descripcion': tarea.descripcion,
+            'estado': tarea.estado,
+            'usuario_id':tarea.usuario_id
+        })
+
+    return jsonify(lista_tareas), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
