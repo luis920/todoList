@@ -155,6 +155,27 @@ def actualizar_tarea(id):
         }
     }), 200
 
+@app.route('/tarea/<int:id>', methods=['DELETE'])
+def eliminar_tarea(id):
+    tarea = Tareas.query.get(id)
+    
+    if not tarea:
+        return jsonify({"error": "No se encontró el ID de la tarea"}), 404
+
+    # Guardamos los datos antes de eliminar
+    tarea_eliminada = {
+        "id": tarea.id,
+        "titulo": tarea.titulo,
+        "descripcion": tarea.descripcion,
+        "estado": tarea.estado,
+        "usuario_id": tarea.usuario_id
+    }
+
+    db.session.delete(tarea)
+    db.session.commit()
+
+    return jsonify(tarea_eliminada), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
