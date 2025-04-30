@@ -41,6 +41,32 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("Error al agregar cliente:", error);
         }
       },
+      eliminarTarea: async (id) => {
+        try {
+          const response = await fetch(`http://127.0.0.1:5000/tarea/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            setStore((prevStore) => ({
+              tareas: prevStore.tareas.filter((tarea) => tarea.id !== id),
+            }));
+            return true;
+          } else {
+            console.error(
+              "Error en la respuesta del servidor:",
+              response.status
+            );
+            return false;
+          }
+        } catch (error) {
+          console.error("Error al eliminar tarea:", error);
+          return false;
+        }
+      },
     },
   };
 };

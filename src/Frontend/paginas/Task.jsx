@@ -9,6 +9,7 @@ import {
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import "../estilos/Task.css";
+import Swal from "sweetalert2";
 
 const Task = () => {
   const { store, actions } = useContext(Context);
@@ -25,6 +26,45 @@ const Task = () => {
   useEffect(() => {
     actions.obtenerTareas();
   }, []);
+
+  const manejadorEliminarTarea = async (id) => {
+    const confirmDelete = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        const result = await actions.eliminarTarea(id);
+
+        if (result) {
+          Swal.fire({
+            icon: "success",
+            title: "Tarea eliminada",
+            text: "La tarea ha sido eliminada con éxito.",
+          });
+          actions.obtenerTareas();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Hubo un error al eliminar la tarea.",
+          });
+        }
+      } catch (error) {
+        console.error("Error en manejadorEliminarTarea:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un error al intentar eliminar la tarea. Intenta nuevamente.",
+        });
+      }
+    }
+  };
   return (
     <>
       <div className=" d-flex justify-content-end mt-3 mx-3">
@@ -77,7 +117,7 @@ const Task = () => {
                           icon={faPencil}
                         />
                       </button>
-                      <button>
+                      <button onClick={() => manejadorEliminarTarea(tarea.id)}>
                         <FontAwesomeIcon
                           className="icon-actions-trash"
                           icon={faTrash}
