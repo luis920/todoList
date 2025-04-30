@@ -103,29 +103,33 @@ const Task = () => {
                 </tr>
               </thead>
               <tbody>
-                {store.tareas.map((tarea) => (
-                  <tr key={tarea.id}>
-                    <td>{tarea.id}</td>
-                    <td>{tarea.titulo}</td>
-                    <td>{tarea.descripcion}</td>
-                    <td>{tarea.estado}</td>
-                    <td>{tarea.usuario_id}</td>
-                    <td>
-                      <button>
-                        <FontAwesomeIcon
-                          className="icon-actions-pen"
-                          icon={faPencil}
-                        />
-                      </button>
-                      <button onClick={() => manejadorEliminarTarea(tarea.id)}>
-                        <FontAwesomeIcon
-                          className="icon-actions-trash"
-                          icon={faTrash}
-                        />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {store.tareas
+                  .filter((tarea) => tarea.usuario_id === store.usuario?.id)
+                  .map((tarea) => (
+                    <tr key={tarea.id}>
+                      <td>{tarea.id}</td>
+                      <td>{tarea.titulo}</td>
+                      <td>{tarea.descripcion}</td>
+                      <td>{tarea.estado}</td>
+                      <td>{tarea.usuario_id}</td>
+                      <td>
+                        <button>
+                          <FontAwesomeIcon
+                            className="icon-actions-pen"
+                            icon={faPencil}
+                          />
+                        </button>
+                        <button
+                          onClick={() => manejadorEliminarTarea(tarea.id)}
+                        >
+                          <FontAwesomeIcon
+                            className="icon-actions-trash"
+                            icon={faTrash}
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
