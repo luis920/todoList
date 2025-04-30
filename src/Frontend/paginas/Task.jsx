@@ -1,3 +1,5 @@
+import React, { useEffect, useContext } from "react";
+import { Context } from "../store/appContext";
 import logo from "../imagenes/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,15 +11,20 @@ import {
 import "../estilos/Task.css";
 
 const Task = () => {
-  const Tareas = [
-    {
-      Id: 1,
-      Titulo: "Comer",
-      Descripcion: "Comer Hamburgyesa",
-      Estado: "Completado",
-      Usuario_Id: 3,
-    },
-  ];
+  const { store, actions } = useContext(Context);
+  // const Tareas = [
+  //   {
+  //     Id: 1,
+  //     Titulo: "Comer",
+  //     Descripcion: "Comer Hamburgyesa",
+  //     Estado: "Completado",
+  //     Usuario_Id: 3,
+  //   },
+  // ];
+
+  useEffect(() => {
+    actions.obtenerTareas();
+  }, []);
   return (
     <>
       <div className=" d-flex justify-content-end mt-3 mx-3">
@@ -56,13 +63,13 @@ const Task = () => {
                 </tr>
               </thead>
               <tbody>
-                {Tareas.map((tarea) => (
-                  <tr key={tarea.Id}>
-                    <td>{tarea.Id}</td>
-                    <td>{tarea.Titulo}</td>
-                    <td>{tarea.Descripcion}</td>
-                    <td>{tarea.Estado}</td>
-                    <td>{tarea.Usuario_Id}</td>
+                {store.tareas.map((tarea) => (
+                  <tr key={tarea.id}>
+                    <td>{tarea.id}</td>
+                    <td>{tarea.titulo}</td>
+                    <td>{tarea.descripcion}</td>
+                    <td>{tarea.estado}</td>
+                    <td>{tarea.usuario_id}</td>
                     <td>
                       <button>
                         <FontAwesomeIcon
