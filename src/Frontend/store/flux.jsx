@@ -102,8 +102,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       cerrarSesion: () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("rol");
-        setStore({ usuario: null, token: null });
       },
     },
   };

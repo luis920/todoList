@@ -10,18 +10,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../estilos/Task.css";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const Task = () => {
   const { store, actions } = useContext(Context);
-  // const Tareas = [
-  //   {
-  //     Id: 1,
-  //     Titulo: "Comer",
-  //     Descripcion: "Comer Hamburgyesa",
-  //     Estado: "Completado",
-  //     Usuario_Id: 3,
-  //   },
-  // ];
+  const navigate = useNavigate();
 
   useEffect(() => {
     actions.obtenerTareas();
@@ -65,10 +58,17 @@ const Task = () => {
       }
     }
   };
+  const manejadorCierreDeSesion = () => {
+    actions.cerrarSesion();
+    navigate("/");
+  };
   return (
     <>
       <div className=" d-flex justify-content-end mt-3 mx-3">
-        <button className="btn btn-danger mt-3">
+        <button
+          className="btn btn-danger mt-3"
+          onClick={manejadorCierreDeSesion}
+        >
           <FontAwesomeIcon
             className="icon-sidebar text-light mx-1"
             icon={faRightFromBracket}
