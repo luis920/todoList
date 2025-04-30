@@ -122,5 +122,39 @@ def obtener_tareas():
 
     return jsonify(lista_tareas), 200
 
+
+@app.route('/tarea/<int:id>', methods=['PUT'])
+def actualizar_tarea(id):
+    tarea = Tareas.query.get(id)
+
+    if not tarea:
+        return jsonify({'error': 'Tarea no encontrada'}), 404
+
+    data = request.json
+
+   
+    if 'titulo' in data:
+        tarea.titulo = data['titulo']
+    if 'descripcion' in data:
+        tarea.descripcion = data['descripcion']
+    if 'estado' in data:
+        tarea.estado = data['estado']
+    if 'usuario_id' in data:
+        tarea.usuario_id = data['usuario_id']
+
+    db.session.commit()
+
+    return jsonify({
+        'mensaje': 'Tarea actualizada correctamente',
+        'tarea': {
+            'id': tarea.id,
+            'titulo': tarea.titulo,
+            'descripcion': tarea.descripcion,
+            'estado': tarea.estado,
+            'usuario_id': tarea.usuario_id
+        }
+    }), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
