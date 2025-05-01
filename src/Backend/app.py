@@ -48,7 +48,7 @@ class Tareas(db.Model):
         self.estado = estado
         self.usuario_id = usuario_id
 
-# Resetear base de datos (drop y create)
+
 with app.app_context():
     db.drop_all()
     db.create_all()
@@ -107,7 +107,9 @@ def login():
 
 # Ruta para agregar una tarea a un usuario
 @app.route('/tarea', methods=['POST'])
+# @jwt_required()
 def nueva_tarea():
+    # usuario_id = get_jwt_identity()
     data = request.json
 
     if not data.get('titulo') or not data.get('descripcion') or not data.get('estado') or not data.get('usuario_id'):
@@ -134,8 +136,13 @@ def nueva_tarea():
         }
     }), 201
 
+
+###RUTA PARA OBTENER TAREAS##
+
 @app.route('/tareas', methods=['GET'])
+# @jwt_required()
 def obtener_tareas():
+    # usuario_id = get_jwt_identity()
     tareas = Tareas.query.all()
     lista_tareas = []
 
@@ -150,9 +157,11 @@ def obtener_tareas():
 
     return jsonify(lista_tareas), 200
 
-
+###RUTA PARA ACTUALIZAR TAREAS#
 @app.route('/tarea/<int:id>', methods=['PUT'])
+# @jwt_required()
 def actualizar_tarea(id):
+    # usuario_id = get_jwt_identity()
     tarea = Tareas.query.get(id)
 
     if not tarea:
@@ -183,10 +192,13 @@ def actualizar_tarea(id):
         }
     }), 200
 
+##RUTA PARA ELIMINAR TAREAS##
+
 @app.route('/tarea/<int:id>', methods=['DELETE'])
+# # @jwt_required()
 def eliminar_tarea(id):
+    # usuario_id = get_jwt_identity()
     tarea = Tareas.query.get(id)
-    
     if not tarea:
         return jsonify({"error": "No se encontró el ID de la tarea"}), 404
 
