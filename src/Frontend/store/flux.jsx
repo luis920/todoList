@@ -60,9 +60,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           if (response.ok) {
             const usuarioRegistrado = await response.json();
-            const store = getStore();
+            // const store = getStore();
             setStore({
-              usuario: [...store.usuario, usuarioRegistrado],
+              usuario: usuarioRegistrado.usuario,
             });
             return usuarioRegistrado;
           } else {
