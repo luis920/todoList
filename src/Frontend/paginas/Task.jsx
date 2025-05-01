@@ -239,78 +239,69 @@ const Task = () => {
             </table>
           </div>
         </div>
-        <div>
+        <div className="d-flex  w-50 position-fixed ">
           {mostrarModal && (
-            <div>
-              <div className="modal-content">
-                <h2 className="">Nueva Tarea</h2>
-                <form
-                  className="tarea-formulario "
-                  onSubmit={manejadorAgregarTarea}
-                >
-                  <div className="d-flex">
-                    <div className="d-flex column ">
-                      <label htmlFor="proveedor">Titulo</label>
-                      <input
-                        onChange={manejadorDeCambiosEnInput}
-                        type="text"
-                        id="titulo"
-                        name="titulo"
-                        value={nuevaTarea.titulo}
-                        required
-                      />
-                    </div>
-                    <div className="d-flex column ">
-                      <label className="mx-2" htmlFor="descripcion ">
-                        Descripcion
-                      </label>
-                      <input
-                        onChange={manejadorDeCambiosEnInput}
-                        className="mx-2"
-                        type="text"
-                        id="descripcion"
-                        name="descripcion"
-                        value={nuevaTarea.descripcion}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="d-flex">
-                    <div className="d-flex column ">
-                      <label htmlFor="producto">Estado</label>
-                      <select
-                        onChange={manejadorDeCambiosEnInput}
-                        type="text"
-                        id="estado"
-                        name="estado"
-                        value={nuevaTarea.estado}
-                        required
-                      >
-                        <option value="Selecciona una opcion">
-                          Selecciona una opcion
-                        </option>
-                        <option value="terminado">terminado</option>
-                        <option value="en proceso">en proceso</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="d-flex">
-                    <button
-                      type="submit"
-                      className="button-form btn btn-primary w-50 "
-                    >
-                      {editarTarea ? "Actualizar" : "Agregar"}
-                    </button>
-                    <button
-                      type="button"
-                      className="button-form btn btn-secondary w-50 "
-                      onClick={manejadorCerrarModal}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
+            <div className="modal-content p-4 bg-dark rounded shadow text-light ">
+              <h2 className="text-center mb-4">Nueva Tarea</h2>
+              <form
+                className="d-flex flex-column align-items-center gap-3"
+                onSubmit={manejadorAgregarTarea}
+              >
+                <div className="form-group w-75">
+                  <label htmlFor="titulo">Título</label>
+                  <input
+                    onChange={manejadorDeCambiosEnInput}
+                    type="text"
+                    id="titulo"
+                    name="titulo"
+                    value={nuevaTarea.titulo}
+                    required
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="form-group w-75">
+                  <label htmlFor="descripcion">Descripción</label>
+                  <input
+                    onChange={manejadorDeCambiosEnInput}
+                    type="text"
+                    id="descripcion"
+                    name="descripcion"
+                    value={nuevaTarea.descripcion}
+                    required
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="form-group w-75">
+                  <label htmlFor="estado">Estado de la tarea</label>
+                  <select
+                    onChange={manejadorDeCambiosEnInput}
+                    id="estado"
+                    name="estado"
+                    value={nuevaTarea.estado}
+                    required
+                    className="form-select"
+                  >
+                    <option value="">Selecciona una opción</option>
+                    <option value="terminado">Terminado</option>
+                    <option value="en proceso">En proceso</option>
+                  </select>
+                </div>
+
+                <div className="d-flex justify-content-between w-75 mt-3">
+                  <button type="submit" className="btn btn-primary w-50 me-2">
+                    {editarTarea ? "Actualizar" : "Agregar"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary w-50"
+                    onClick={manejadorCerrarModal}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>
